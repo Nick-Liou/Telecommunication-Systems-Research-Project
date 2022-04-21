@@ -1,5 +1,7 @@
 %HQAM 
 
+%Nicks old Algo2
+
 %inputs
 distance = sqrt(3);   	%minimum distance between 2 symbols
 %distance = 2;
