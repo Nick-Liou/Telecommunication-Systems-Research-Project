@@ -7,6 +7,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
         
         m = 2^n;               	%number of symbols
         
+        
         % A usefull constant
         if rem(n,2)==0
                 a = 2^(n/2);                    
@@ -37,7 +38,10 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
         if rem(n,2)==0 && n>=2
                 SymbolCoordinates = (zeros(a+a/2-1,a));          %without offset
                 SymbolCoordinates2 = (zeros(a+a/2-1,a));        %with offset - final coordinates
-                SymbolData = (zeros(a+a/2-1,a));                       %decimal number of symbol
+                SymbolData = (zeros(a+a/2-1,a))-1;                       %decimal number of symbol
+              
+                
+                GrayCode = LinearGrayCode(n/2);
 
                 i = 1;                                                                           %matrix index
                 offset = 0;  
@@ -53,7 +57,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                 e = q+r;                                        %symbol
                                 inphase(i) = e(1) - h_o;
                                 quadr(i) = e(2) - v_o;
-                                SymbolData(k-offset+1+a/2-1,j+1) = i;                           %starts from 1 ***Πρεπει να γινει Gray***
+                                SymbolData(k-offset+1+a/2-1,j+1) =          GrayCode(k+1) + bitshift( GrayCode(j+1) , n/2 )    ;                           
                                 SymbolCoordinates(k-offset+1+a/2-1,j+1) = e(1) + 1i*e(2);
                                 SymbolCoordinates2(k-offset+1+a/2-1,j+1) = inphase(i) +1i*quadr(i);
                                 i=i+1; 
@@ -63,7 +67,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                 %for n odd
                 SymbolCoordinates = (zeros(3*a+3*a/2-1 ,    3*a));     %without offset
                 SymbolCoordinates2 = (zeros(3*a+3*a/2-1 ,    3*a));    %with offset - final coordinates
-                SymbolData = (zeros(3*a+3*a/2-1 ,    3*a));            %decimal number of symbol
+                SymbolData = (zeros(3*a+3*a/2-1 ,    3*a))-1;            %decimal number of symbol
 
                 i = 1;                                                                           %matrix index
                 offset = 0;  
@@ -115,6 +119,6 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                 constPower = constPower + abs(refConst(i))^2; % real(refConst(i))^2 + imag(refConst(i))^2;
         end
         constPower=constPower/m;
-
+        
 end
 
