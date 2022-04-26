@@ -4,12 +4,13 @@
 % for n =16 we have a problem with the SymbolData there are NEGATIVE values
 
 distance = 2;
-maxN = 18;
-GpValues = zeros ( maxN, 1 );
+maxN = 17;
+GpValues = zeros ( maxN, 2 );
 plot = false; 
 %plot = true;
 
 for n = 2:maxN
+       
         m=2^n;
         
         if n ==3 
@@ -21,6 +22,8 @@ for n = 2:maxN
                 % a+a/2-1,a
                 maxRows = a+a/2-1;
                 maxColumns = a;
+                GpValues(n,2)= ( 4/3*(a-2)^2+147/30*(a-2)+14/3 ) /m ;
+                
         else
                 a = 2^((n-3)/2);
                 %3*a+3*a/2-1 ,    3*a
@@ -37,15 +40,36 @@ for n = 2:maxN
                 drawnow
                 hold on
                 offset = 0;
-                for j=0:a-1
-                        if(j~=0 && rem(j,2)==0)
-                                offset = offset+1;    
+                if ( rem(n,2) == 0)
+                        for j=0:a-1
+                                if(j~=0 && rem(j,2)==0)
+                                        offset = offset+1;    
+                                end
+                                for k=0:a-1
+                                        %text(real(SymbolCoordinates2(k-offset+1+a/2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+a/2-1,j+1))+0.2, string(dec2bin(SymbolData(k-offset+1+a/2-1,j+1),n))); 
+                                        text(real(SymbolCoordinates2(k-offset+1+a/2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+a/2-1,j+1))+0.2, string(SymbolData(k-offset+1+a/2-1,j+1))); 
+                                end
                         end
-                        for k=0:a-1
-                                %text(real(SymbolCoordinates2(k-offset+1+a/2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+a/2-1,j+1))+0.2, string(dec2bin(SymbolData(k-offset+1+a/2-1,j+1),n))); 
-                                text(real(SymbolCoordinates2(k-offset+1+a/2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+a/2-1,j+1))+0.2, string(SymbolData(k-offset+1+a/2-1,j+1))); 
+                        
+                else
+                        for j=0:3*a-1
+                                if(j~=0 && rem(j,2)==0)
+                                        offset = offset+1;    
+                                end    
+
+                                for k=0:3*a-1
+                                        if ( ( j < a/2 || j > 3*a-1-a/2 ) && ( k < a/2 || k > 3*a-1-a/2 )  )
+                                               continue %Not print
+                                        end
+                                        % k-offset+1+3*a/2-1   , j+1
+                                        
+                                        %text(real(SymbolCoordinates2( k-offset+1+3*a/2-1   , j+1)), imag(SymbolCoordinates2( k-offset+1+3*a/2-1   , j+1)+0.2), string(dec2bin(SymbolData( k-offset+1+3*a/2-1   , j+1),n)));
+                                        text(real(SymbolCoordinates2( k-offset+1+3*a/2-1   , j+1)), imag(SymbolCoordinates2( k-offset+1+3*a/2-1   , j+1)+0.2), string(SymbolData( k-offset+1+3*a/2-1   , j+1))); 
+                        
+                                end
                         end
                 end
+                
         end
         
         
