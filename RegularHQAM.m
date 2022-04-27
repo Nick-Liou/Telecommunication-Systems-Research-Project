@@ -144,7 +144,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                                          %Right square  over the x axis
                                                          %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , (j+a/2+1)-a/2   );  % using the Gray2D before fliping over x
                                                          %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , 1+a/2 - ((j+a/2+1)-a/2)   );  % using the Gray2D 
-                                                         SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey(  1+a/2 - ((j+a/2+1)-a/2)  );
+                                                         SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( k+3/2*a+1 ) ,  (n-1)/2  ) + GrayCodey(  1 - (j+a/2+1) );
                                                  end
                                                 
                                         elseif ( j >= 3*a/2 && k >= 3*a/2 )
@@ -159,7 +159,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                                         %Right square  over the x axis
                                                         %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , (j+1-3/2*a)+a/2  );  % using the Gray2D before fliping over x
                                                         %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , 7/2*a+1-(j+1-3/2*a+a/2)  );  % using the Gray2D 
-                                                        SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey( 7/2*a+1-(j+1-3/2*a+a/2) );
+                                                        SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey( 7/2*a+1-(j+1-a) );
                                                         
                                                 end
                                                 
