@@ -1,15 +1,16 @@
 
 % Test the Gray Mapping 
 
-% for n =16 we have a problem with the SymbolData there are NEGATIVE values
+% Calculate the Gp for different order constellations
 
 distance = 2;
-maxN = 17;
+maxN = 13;
 GpValues = zeros ( maxN, 2 );
 plot = false; 
 %plot = true;
 
 for n = 2:maxN
+        tic
        
         m=2^n;
         
@@ -35,7 +36,7 @@ for n = 2:maxN
         
         if plot 
                 %Ploting Gray Mapping
-                scatterplot(refConst,[],[],'r*');
+                scatterplot(refConst,[],[],'r*'); %#ok<UNRCH>
                 grid
                 drawnow
                 hold on
@@ -136,10 +137,13 @@ for n = 2:maxN
 
         Gp = Gp/m;
         GpValues(n)= Gp;
-
+        
+        toc
         
         
 end
 
 GpValues
+
+
 
