@@ -1,8 +1,8 @@
 function [codeDecimal] = LinearGrayCode(n)
 % Returns a vector of 2^n elements with intigers gray coded
-        if n>=32 
+        if n>15 
                 errID = 'LinearGrayCode:TooBigInput';
-                msg = 'LinearGrayCode input must be at most 31 and was given: '+ string(n) ;
+                msg = 'LinearGrayCode input must be at most 15 and was given: '+ string(n) ;
                 exceptionWhenNisTooBig = MException(errID,msg);
                 throw(exceptionWhenNisTooBig)
         end

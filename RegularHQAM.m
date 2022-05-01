@@ -16,8 +16,8 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
         end
 
 
-        SymbolCoordinates = [];    	%without offset
-        SymbolCoordinates2 = [];    	%with offset - final coordinates
+        SymbolCoordinates = [];    	%without offset                         !!!!!!!!!!!!!!!! RENAME !!!!!!!!!!!!!
+        SymbolCoordinates2 = [];    	%with offset - final coordinates        !!!!!!!!!!!!!!!! RENAME !!!!!!!!!!!!!
         SymbolData = [];                %decimal number of symbol
 
         constPower = 0;         % The Mean Energy of the constellation (sum of squares)
@@ -42,15 +42,6 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
               
                 
                 GrayCode = LinearGrayCode(n/2);
-                if (isa( GrayCode(1) , 'int16') && n>=16) || (isa( GrayCode(1) , 'int32') && n>=32)
-                        %Error with the bitshifting 
-                        errID = 'RegularHQAM:TooSmallTypeForGrayStorage';
-                        msg = 'In RegularHQAM at Gray mapping the type for storage is too small for that grey code, n='+ string(n)+'data type=' + class(GrayCode(1)) ;
-                        exceptionWhenNisTooBig = MException(errID,msg);
-                        throw(exceptionWhenNisTooBig)
-                        
-                end
-                
 
                 i = 1;                                                                           %matrix index
                 offset = 0;  
@@ -74,22 +65,13 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                 end
         elseif rem(n,2)~=0 && n>=5    
                 %for n odd
-                SymbolCoordinates = (zeros(3*a+3*a/2-1 ,    3*a));     %without offset
-                SymbolCoordinates2 = (zeros(3*a+3*a/2-1 ,    3*a));    %with offset - final coordinates
-                SymbolData = (zeros(3*a+3*a/2-1 ,    3*a))-1;            %decimal number of symbol
+                SymbolCoordinates = (zeros(3*a+3*a/2-1 ,    3*a));      %without offset
+                SymbolCoordinates2 = (zeros(3*a+3*a/2-1 ,    3*a));     %with offset - final coordinates
+                SymbolData = (zeros(3*a+3*a/2-1 ,    3*a))-1;           %decimal number of symbol
                 
                 
                 GrayCodex = LinearGrayCode((n+1)/2); %3a x
                 GrayCodey = LinearGrayCode((n-1)/2); %2a y
-                
-                if (isa( GrayCodex(1) , 'int16') && n>=16) || (isa( GrayCodex(1) , 'int32') && n>=32)
-                        %Error with the bitshifting 
-                        errID = 'RegularHQAM:TooSmallTypeForGrayStorage';
-                        msg = 'In RegularHQAM at Gray mapping the type for storage is too small for that grey code, n='+ string(n)+'data type=' + class(GrayCode(1)) ;
-                        exceptionWhenNisTooBig = MException(errID,msg);
-                        throw(exceptionWhenNisTooBig)
-                        
-                end
                 
                 %{
                 GrayCode2D = zeros( 2^((n+1)/2) , 2^((n-1)/2) );
@@ -103,8 +85,8 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                 
                 i = 1;                                                          	%matrix index
                 offset = 0;  
-                h_o = 3*a*distance/2 - distance/4;                                      %horizontal offset    +++++++
-                v_o = (3*a/2 - 1)*sqrt(3)*distance/2 + sqrt(3)*distance/4;      	%vertical offset          +++++++
+                h_o = 3*a*distance/2 - distance/4;                                      %horizontal offset              +++++++
+                v_o = (3*a/2 - 1)*sqrt(3)*distance/2 + sqrt(3)*distance/4;      	%vertical offset                +++++++
 
                 for j=0:3*a-1
                         if(j~=0 && rem(j,2)==0)
@@ -113,6 +95,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
 
                         for k=0:3*a-1
                                 if ( ( j < a/2 || j > 3*a-1-a/2 ) && ( k < a/2 || k > 3*a-1-a/2 )  )
+                                        % Those are the egdes that don't have symbols
                                        continue
                                 end
                                 q = (k-offset)*Q;                               %x
@@ -126,32 +109,21 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                 
                                 
                                 %Gray code 
-                                SymbolData(             k-offset+1+3*a/2-1        ,       j+1) = i+100000;       %starts from 1 ***Πρεπει να γινει Gray*** It should be uselles now !!! 
+                                %SymbolData(             k-offset+1+3*a/2-1        ,       j+1) = i+100000;       %starts from 1 ***Πρεπει να γινει Gray*** It should be uselles now !!! 
                                 
                                 if ( j >= a/2 && j <= 3*a-1-a/2 )
-                                        
+                                        % Those are the easy ones, the center square 2a*2a                                        
                                         SymbolData( k-offset+1+3*a/2-1 , j+1) =   GrayCodey(j+1-a/2) + bitshift( GrayCodex(k+1 + a/2) , (n-1)/2  )  ;  
-                                        %Delete this error throw when we
-                                        %make sure it works correct
-                                        if bitand(  GrayCodey(j+1-a/2) , bitshift( GrayCodex(k+1 + a/2) , (n-1)/2  ) ) ~= 0
-                                                errID = 'LinearGrayCode:TooBigInput';
-                                                msg = 'Gray mapping error wrong bitshift !!!' ;
-                                                exceptionWhenNisTooBig = MException(errID,msg);
-                                                throw(exceptionWhenNisTooBig)
-                                        end
+                                        
                                 else
-                                        %The squares that are 'moved' from
-                                        %the left and right of the 3a*2a
+                                        %The squares that are 'moved' from the left and right of the 3a*2a
                                         % To swap we need the funtion f(i)= -i + x1 + x2 , where i=[x1,x2]  and f(i)=[x2,x1]
-                                        %GrayCode2D
+                                        
                                 	if     ( j<a/2 &&  k < 3*a/2 )
                                                 %Down left rectangle
-                                                %SymbolData( k-offset+1+3*a/2-1   , j+1);
-                                                
                                                 %We separate it to 2 squares
                                                 if ( k < 3*a/2 -a/2 )
                                                         %Left square Flip over the x axis
-                                                        
                                                         %SymbolData( k-offset+1+3*a/2-1   , j+1) = GrayCode2D ( k-a/2+1 , j+1  ) ; % using the Gray2D before fliping over x
                                                         SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex(  k-a/2+1 ) ,  (n-1)/2  ) + GrayCodey(a/2+1 - (j+1) ); 
                                                         
@@ -163,7 +135,6 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
 
                                         elseif ( j<a/2 && k >= 3*a/2 )
                                                 %Down right rectangle
-                                                %SymbolData( k-offset+1+3*a/2-1   , j+1);
                                                  if ( k<  2*a  )
                                                          %Left square over the y axis
                                                          %SymbolData( k-offset+1+3*a/2-1   , j+1) = GrayCode2D ( (k+2*a+1) , (j+a/2+1)  ) ; % using the Gray2D before fliping over y
@@ -173,15 +144,11 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                                          %Right square  over the x axis
                                                          %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , (j+a/2+1)-a/2   );  % using the Gray2D before fliping over x
                                                          %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , 1+a/2 - ((j+a/2+1)-a/2)   );  % using the Gray2D 
-                                                         SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey(  1+a/2 - ((j+a/2+1)-a/2)  );
-                                                         
-                                                         
+                                                         SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( k+3/2*a+1 ) ,  (n-1)/2  ) + GrayCodey(  1 - (j+a/2+1) );
                                                  end
                                                 
                                         elseif ( j >= 3*a/2 && k >= 3*a/2 )
                                                 %Up right rectangle
-                                                %SymbolData( k-offset+1+3*a/2-1   , j+1);
-                                                
                                                 %We separate it to 2 squares
                                                 if ( k<  2*a  ) 
                                                         %Left square over the y axis
@@ -192,14 +159,12 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                                         %Right square  over the x axis
                                                         %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , (j+1-3/2*a)+a/2  );  % using the Gray2D before fliping over x
                                                         %SymbolData( k-offset+1+3*a/2-1   , j+1)  = GrayCode2D ( (k+a/2+1)+a , 7/2*a+1-(j+1-3/2*a+a/2)  );  % using the Gray2D 
-                                                        SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey( 7/2*a+1-(j+1-3/2*a+a/2) );
+                                                        SymbolData( k-offset+1+3*a/2-1   , j+1) = bitshift( GrayCodex( (k+a/2+1)+a ) ,  (n-1)/2  ) + GrayCodey( 7/2*a+1-(j+1-a) );
                                                         
                                                 end
                                                 
                                         elseif ( j >= 3*a/2 && k < 3*a/2 )
                                                 %Up left rectangle
-                                                %SymbolData( k-offset+1+3*a/2-1   , j+1);
-                                                
                                                 %We separate it to 2 squares
                                                 if ( k < 3*a/2 -a/2 )
                                                         %Left square over the x axis
@@ -224,7 +189,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                 quadr = [sqrt(3)*distance/4 sqrt(3)*distance/4 0 -sqrt(3)*distance/4];
                 inphase = [inphase; -inphase];
                 quadr = [quadr; -quadr];
-                % NEEDs more work +++++++
+                % NEEDs more work +++++++ +++++++++++++++++++   +++++++++++++        ++++++++++++     ++++++++++++         ++++++++++++
 
 
         end
