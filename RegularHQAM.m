@@ -1,4 +1,4 @@
-function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,SymbolData,refConst,constPower] = RegularHQAM(n,distance)
+function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,SymbolData,constellationVector , constellationGrayCodeVector ,constPower] = RegularHQAM(n,distance)
 %UNTITLED6 Summary of this function goes here ++++++++
 %   Detailed explanation goes here ++++++++++++++
         %inputs
@@ -6,7 +6,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
         %n order of the constellation
         
         m = 2^n;               	%number of symbols
-        
+        constellationGrayCodeVector = 1:m; 
         
         % A usefull constant
         if rem(n,2)==0
@@ -14,7 +14,6 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
         else
                 a = 2^((n-3)/2);
         end
-        
         
         SymbolCoordinates = [];    	%without offset                         !!!!!!!!!!!!!!!! RENAME !!!!!!!!!!!!!
         SymbolCoordinates2 = [];    	%with offset - final coordinates        !!!!!!!!!!!!!!!! RENAME !!!!!!!!!!!!!
@@ -69,6 +68,7 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
                                 SymbolData(k-offset+1+a/2-1,j+1) =          GrayCode(k+1) + bitshift( GrayCode(j+1) , n/2 )    ;                           
                                 SymbolCoordinates(k-offset+1+a/2-1,j+1) = e(1) + 1i*e(2);
                                 SymbolCoordinates2(k-offset+1+a/2-1,j+1) = inphase(i) +1i*quadr(i);
+                                constellationGrayCodeVector(i) = SymbolData(k-offset+1+a/2-1,j+1) ; % GrayCode 
                                 i=i+1; 
                         end
                 end
@@ -204,32 +204,105 @@ function [SymbolCoordinates,SymbolCoordinates2,SymbolCoordinates2Transpose,Symbo
 
 
                                 end
-                                
+                                constellationGrayCodeVector(i) =  SymbolData( k-offset+1+3*a/2-1   , j+1) ;
                                 i=i+1; 
                         end
                 end
         elseif n==3
+                %{
                 inphase = [0 distance distance/2 distance];
                 quadr = [sqrt(3)*distance/4 sqrt(3)*distance/4 0 -sqrt(3)*distance/4];
                 inphase = [inphase; -inphase];
                 quadr = [quadr; -quadr];
+                %}
                 % NEEDs more work +++++++ +++++++++++++++++++   +++++++++++++        ++++++++++++     ++++++++++++         ++++++++++++
-
+                
+                %{
+                inphase = [-distance 0 distance -distance/2 distance/2 -distance 0 distance];
+                quadr = [-sqrt(3)*distance/4 -sqrt(3)*distance/4 -sqrt(3)*distance/4 0 0 sqrt(3)*distance/4 sqrt(3)*distance/4 sqrt(3)*distance/4];
+                
+                % NEEDs more work +++++++
+                SymbolCoordinates = (zeros(3,4));          %without offset WE DONT NEED THAT 
+                SymbolCoordinates2 = (zeros(3,4));        %with offset - final coordinates
+                SymbolData = (zeros(3,4))-1;                       %decimal number of symbol
+                
+                   
+                SymbolCoordinates(1,1) = -distance + 1i*sqrt(3)*distance/4;
+                SymbolCoordinates(1,2) = 0 + 1i*sqrt(3)*distance/4;
+                SymbolCoordinates(1,3) = distance + 1i*sqrt(3)*distance/4;
+                SymbolCoordinates(2,2) = -distance/2 +1i*0;
+                SymbolCoordinates(2,3) = distance/2 +1i*0;
+                SymbolCoordinates(3,2) = -distance - 1i*sqrt(3)*distance/4;
+                SymbolCoordinates(3,3) = 0 - 1i*sqrt(3)*distance/4;
+                SymbolCoordinates(3,4) = distance - 1i*sqrt(3)*distance/4;
+                
+                SymbolData(1,1) = de2bi(1);
+                SymbolData(1,2) = de2bi(4);
+                SymbolData(1,3) = de2bi(6);
+                SymbolData(2,2) = de2bi(0);
+                SymbolData(2,3) = de2bi(5);
+                SymbolData(3,2) = de2bi(2);
+                SymbolData(3,3) = de2bi(3);
+                SymbolData(3,4) = de2bi(7);
+                
+                %}
+                
+                
+                SymbolCoordinates = zeros(4,3);          %without offset
+                SymbolCoordinates2 = zeros(4,3);        %with offset - final coordinates
+                SymbolData = (zeros(4,3))-1  ;                     %decimal number of symbol
+              
+                
+                SymbolData(1,3) = 2;
+                SymbolData(2,1) = 7;
+                SymbolData(3,1) = 5;
+                SymbolData(2,2) = 6;
+                SymbolData(3,2) = 0;
+                SymbolData(2,3) = 3;
+                SymbolData(3,3) = 1;
+                SymbolData(4,1) = 4;
+                
+                i = 1;                                                                           %matrix index
+                offset = 0;  
+                h_o = distance; % a*distance/2 - distance/4;                                                  %horizontal offset
+                v_o = sqrt(3)*distance/2; %(a/2 - 1)*sqrt(3)*distance/2 + sqrt(3)*distance/4;          %vertical offset
+                for j=0:2
+                        if(j~=0 && rem(j,2)==0)
+                                offset = offset+1;    
+                        end
+                        for k=0:2
+                                if ( j==1 && k == 2) 
+                                        continue
+                                end
+                                q = (k-offset)*Q;                               %x
+                                r = j*R;                                        %y
+                                e = q+r;                                        %symbol
+                                inphase(i) = e(1) - h_o;
+                                quadr(i) = e(2) - v_o;
+                                %SymbolData(k-offset+1+a/2-1,j+1) =          GrayCode(k+1) + bitshift( GrayCode(j+1) , n/2 )    ;                           
+                                SymbolCoordinates(k-offset+1+2-1,j+1) = e(1) + 1i*e(2);
+                                SymbolCoordinates2(k-offset+1+2-1,j+1) = inphase(i) +1i*quadr(i);
+                                constellationGrayCodeVector(i) = SymbolData(k-offset+1+2-1,j+1);
+                                i=i+1; 
+                        end
+                end
+                
+                
 
         end
-
+        
 
 
         SymbolCoordinates2Transpose = SymbolCoordinates2.';
 
         inphase = inphase(:);
         quadr = quadr(:);
-        refConst = inphase + 1i*quadr;
+        constellationVector = inphase + 1i*quadr;
 
         
         %Calculates the Constellation Power
         for i=1:m
-                constPower = constPower + abs(refConst(i))^2; % real(refConst(i))^2 + imag(refConst(i))^2;
+                constPower = constPower + abs(constellationVector(i))^2; % real(constellationVector(i))^2 + imag(constellationVector(i))^2;
         end
         constPower=constPower/m;
         

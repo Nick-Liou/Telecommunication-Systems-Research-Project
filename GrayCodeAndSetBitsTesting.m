@@ -1,6 +1,5 @@
 %Gey testing :)
 
-%Max of n=15 because The Gray code is int16
 errors =0;
 for n=1:15 
         tic

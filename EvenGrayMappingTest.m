@@ -4,7 +4,7 @@
 % Calculate the Gp for different order constellations
 
 distance = 2;
-maxN = 13;
+maxN = 10;
 GpValues = zeros ( maxN, 2 );
 plot = false; 
 %plot = true;
@@ -14,9 +14,7 @@ for n = 2:maxN
        
         m=2^n;
         
-        if n ==3 
-                continue % We have not made this yet
-        end
+       
         
         if rem(n,2)==0
                 a = 2^(n/2);    
@@ -24,6 +22,11 @@ for n = 2:maxN
                 maxRows = a+a/2-1;
                 maxColumns = a;
                 GpValues(n,2)= ( 4/3*(a-2)^2+147/30*(a-2)+14/3 ) /m ;
+        elseif n==3
+                a=4;  % extra ? 
+                
+                maxRows = 4;
+                maxColumns = 3;
                 
         else
                 a = 2^((n-3)/2);
@@ -32,11 +35,32 @@ for n = 2:maxN
                 maxColumns = 3*a;
         end
         
-        [~,SymbolCoordinates2,~,SymbolData,refConst,~] = RegularHQAM(n,distance) ;
+        [~,SymbolCoordinates2,~,SymbolData,~,constellationVector,~] = RegularHQAM(n,distance) ;
+        
+               %{
+         if n ==3 
+                i = 1;                                                                           %matrix index
+                offset = 0;  
+                for j=0:2
+                        if(j~=0 && rem(j,2)==0)
+                                offset = offset+1;    
+                        end
+                        for k=0:2
+                                if ( j==1 && k == 2) 
+                                        continue
+                                end                     
+                                SymbolCoordinates(k-offset+1+2-1,j+1) = e(1) + 1i*e(2);
+                                SymbolCoordinates2(k-offset+1+2-1,j+1) = inphase(i) +1i*quadr(i);
+                                i=i+1; 
+                        end
+                end
+                %continue % We have not made this yet
+        end
+        %}
         
         if plot 
                 %Ploting Gray Mapping
-                scatterplot(refConst,[],[],'r*'); %#ok<UNRCH>
+                scatterplot(constellationVector,[],[],'r*'); %#ok<UNRCH>
                 grid
                 drawnow
                 hold on
@@ -51,6 +75,22 @@ for n = 2:maxN
                                         text(real(SymbolCoordinates2(k-offset+1+a/2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+a/2-1,j+1))+0.2, string(SymbolData(k-offset+1+a/2-1,j+1))); 
                                 end
                         end
+                        
+                elseif n==3
+                        offset = 0;  
+                        for j=0:2
+                                if(j~=0 && rem(j,2)==0)
+                                        offset = offset+1;    
+                                end
+                                for k=0:2
+                                        if ( j==1 && k == 2) 
+                                                continue
+                                        end        
+                                        text(real(SymbolCoordinates2( k-offset+1+2-1,j+1)), imag(SymbolCoordinates2(k-offset+1+2-1,j+1)+0.2), string(SymbolData( k-offset+1+2-1,j+1))); 
+                                               
+                                end
+                        end
+                        
                         
                 else
                         for j=0:3*a-1
