@@ -1,9 +1,14 @@
-# Telecommunication-Systems-Research-Project
-H-QAM/T-QAM constellations
+# Telecommunication Systems II, ECE AUTh, 2021-22
+Research Project
 
-Creating the constellations
-Grey mapping them
+## Project Info
+- Model H-QAM/T-QAM constellations
+- Create algorithm for Grey mapping the constellations
+- Implement proposed Detection Algorithm
+- Run simulations to evaluate SER & BER for different dB of AWGN
+- Verify BER boundaries from the paper [On the Error Analysis of Hexagonal-QAM Constellations](https://www.researchgate.net/publication/361035342_On_the_Error_Analysis_of_Hexagonal-QAM_Constellations)
 
-And then running simulations to evaluate SER & BER for different dB of AWGN
+## Team Members
+Liouliakis Nikolaos  
 
-Detection algorithm !
+Papadopoulou Aikaterini
