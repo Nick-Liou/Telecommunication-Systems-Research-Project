@@ -8,6 +8,9 @@ Research Project
 - Run simulations to evaluate SER & BER for different dB of AWGN
 - Verify BER boundaries from the paper [On the Error Analysis of Hexagonal-QAM Constellations](https://www.researchgate.net/publication/361035342_On_the_Error_Analysis_of_Hexagonal-QAM_Constellations)
 
+## Report
+Can be found [here](Report_TS2_Group69.pdf)
+
 ## Team Members
 Liouliakis Nikolaos  
 
