@@ -10,7 +10,9 @@ function [codeDecimal] = LinearGrayCode(n)
         codeDecimal = zeros(1,2^n, 'int32');
         
         for i = 0:2^n-1
+                % i is the i'th number of the gray code table
                 for j = 0:n-1
+                        % j is the j'th bit of the gray code
                         a = idivide( mod( int32(i) , 2^(n-j) ) , 2^(n-j-1 ) );
                         b = mod( idivide( int32(i) , 2^(n-j) ) , int32(2) );
                         codeDecimal(i+1) = codeDecimal(i+1) + bitshift( abs(a-b) , n-j-1 );

@@ -1,15 +1,22 @@
-%Gey testing :)
+%Gray code testing :)
 
-%Max of n=15 because The Gray code is int16
+
 errors =0;
-for n=1:15 
+for n=1:20 
         tic
-        %n=12;
-        GrayCode = LinearGrayCode(n);
+        
+        GrayCode = LinearGrayCode(n);        
         for i= 1:2^n-1
                 if SetBits( bitxor( GrayCode(i),GrayCode(i+1) ))~= 1 
                         errors = errors +1;
                 end
         end
+        
         toc
 end
+
+if errors ~= 0 
+        fprintf('There was an error and the linear Gray code was created wrong \n' );
+else        
+        fprintf('The linear Gray code is correct \n' );
+end 
