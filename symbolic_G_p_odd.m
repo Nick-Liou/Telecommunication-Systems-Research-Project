@@ -59,6 +59,7 @@ Gray_code_penatly = simplify(Gray_code_penatly)
 
 Gp_odd = simplify(Gray_code_penatly / total_symbols)
 
+% Works for n>=7  (n=3 and n=5 are special cases)
 n = 17 ; 
 a_num = 2 ^ ((n-5)/2) ; 
 Gp_odd = subs(Gp_odd,a,a_num) ; 
